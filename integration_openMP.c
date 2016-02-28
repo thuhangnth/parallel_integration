@@ -12,6 +12,8 @@ long getUpperBound(double x, double scale)
                 y = (long)y+1;
         return (long)y;
 }
+
+long getLowerBound(double x, double scale)
 {
         float y;
         y = 4.0/(1+pow(x,2))*scale;
@@ -33,16 +35,14 @@ int main(int argc, char **argv)
                 n = 10;                                       
         size = 1.0/n;                                         
                                                               
-        #pragma omp parallel for private (i, upper, lower, xleft, xright) reduction (+:sumUpper,sumLower)
+        #pragma omp parallel for private (xleft, xright) reduction (+:sumUpper,sumLower)
         for (i=0; i<n; i++)                                   
         {       
                 xleft = (double)i*size;                       
                 xright=(double)(i+1)*size;                    
-                upper = getUpperBound(xleft, n);
-                lower = getLowerBound(xright, n);             
-                                                              
-                sumUpper += upper;                            
-                sumLower += lower;                            
+                sumUpper += getUpperBound(xleft, n);
+                sumLower += getLowerBound(xright, n);             
+                                                                                          
         }                                                     
                                                               
         printf("upper: %li, lower :%li \n", sumUpper, sumLower);
